@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Plan</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.strip{display:flex;gap:6px;flex-wrap:wrap;margin-top:18px}
+.strip a{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;text-decoration:none;font-family:var(--display);font-weight:700;background:var(--khaki);color:var(--forest);border:2px solid transparent}
+.strip a.camp{background:var(--forest);color:#fff}
+.strip a.on{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange)}
+.meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.goal{font-family:var(--display);font-size:19px;color:var(--forest);font-style:italic;margin:0}
+.ag{list-style:none;margin:0;padding:0}
+.ag>li{display:grid;grid-template-columns:62px minmax(0,1fr);gap:14px;padding:14px 0;border-top:1px dashed var(--line)}
+.ag>li:first-child{border-top:0}
+.clock{font-family:var(--mono);font-size:12px;color:var(--orange);font-weight:700;text-align:right;padding-top:2px}
+.clock small{display:block;color:var(--muted);font-weight:400}
+.ag p{margin:0 0 6px}
+.req{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px}
+.req .code{font-family:var(--mono);font-size:11.5px;font-weight:700;color:var(--forest)}
+.req .rt{font-size:13.5px;color:var(--ink);margin:3px 0 8px}
+.req .rt i{color:var(--muted)}
+.sg{display:flex;gap:6px;flex-wrap:wrap}
+.sg button{font-family:var(--body);font-size:12.5px;font-weight:700;border:2px solid var(--forest);background:#fff;color:var(--forest);border-radius:20px;padding:4px 12px;cursor:pointer}
+.sg button.on{background:var(--forest);color:#fff}
+.sg button .d{font-weight:400;opacity:.8;margin-left:4px}
+.side .patch{margin-bottom:14px}
+.layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.pn{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.wrapq{background:var(--forest);color:var(--paper);border-radius:14px;padding:16px 20px}
+.wrapq b{color:#f2b38f}
+.wrapq ol{margin:6px 0 0;padding-left:20px}
+@media print{.layout{grid-template-columns:1fr}.sg button{border-width:1px}}
+</style>
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<div class="wrap">
+  <div class="strip noprint" id="strip"></div>
+  <div class="hero" id="hero"></div>
+  <div class="layout">
+    <div>
+      <h2 class="sec">Agenda <small id="total"></small></h2>
+      <div class="patch"><ol class="ag" id="agenda"></ol></div>
+      <div class="wrapq" style="margin-top:14px"><b>Close every meeting with three questions</b> (Michael answers first):
+        <ol><li>What's your next task?</li><li>What do you need for it?</li><li>When will it be done? Write it on the calendar.</li></ol></div>
+      <h2 class="sec">Notes</h2>
+      <div class="patch"><textarea id="notes" rows="6" placeholder="How it went, what each boy did himself, what to redo, partials to record…"></textarea></div>
+    </div>
+    <div class="side">
+      <h2 class="sec">Prep <span class="count" data-count-for="" id="prepCount"></span></h2>
+      <div class="patch"><ul class="check" id="prep"></ul></div>
+      <div class="patch"><div class="eyebrow">Bring</div><ul class="check" id="bring" style="margin-top:6px"></ul></div>
+      <div class="patch"><div class="eyebrow">Homework they leave with</div><ul id="hw" style="margin:8px 0 0;padding-left:18px"></ul></div>
+      <button class="btn ghost noprint" onclick="print()">🖨 Print this plan</button>
+    </div>
+  </div>
+  <div class="pn noprint" id="pn"></div>
+</div>
+<script src="data1.js"></script>
+<script src="data2.js"></script>
+<script src="sessions.js"></script>
+<script src="common.js"></script>
+<script>
+(function(){
+  var U=HUB,H=U.H;U.nav("counselor");
+  var id=new URLSearchParams(location.search).get("s")||SESSIONS[0].id;
+  var idx=SESSIONS.findIndex(function(s){return s.id===id;});if(idx<0)idx=0;
+  var s=SESSIONS[idx];
+  document.title="Meeting "+s.n+": "+s.title;
+  var isCamp=s.kind==="Camp";
+  document.getElementById("strip").innerHTML=SESSIONS.map(function(x){
+    return "<a href='meeting.html?s="+x.id+"' class='"+(x.kind==="Camp"?"camp ":"")+(x.id===s.id?"on":"")+"' title='"+U.esc(x.title)+"'>"+x.n+"</a>";}).join("");
+  document.getElementById("hero").innerHTML="<div class='eyebrow'>Meeting "+s.n+" of "+SESSIONS.length+"</div><h1 class='title'>"+U.esc(s.title)+"</h1><p class='goal'>"+U.esc(s.goal)+"</p>"+
+    "<div class='meta'><span class='tag "+(isCamp?"camp":"home")+"'>"+(isCamp?"At camp":"At home")+"</span><span class='chip'>⏱ "+U.esc(s.len)+"</span><span class='chip'>👥 Second registered adult required</span></div>";
+
+  function li(arr){return arr.map(function(t){return "<li>"+U.esc(t)+"</li>";}).join("");}
+  var prep=document.getElementById("prep");prep.setAttribute("data-list","prep-"+s.id);prep.innerHTML=li(s.prep);
+  document.getElementById("prepCount").setAttribute("data-count-for","prep-"+s.id);
+  var bring=document.getElementById("bring");bring.setAttribute("data-list","bring-"+s.id);bring.innerHTML=li(s.bring);
+  document.getElementById("hw").innerHTML=li(s.homework);
+
+  var t=0;
+  function fmt(m){var h=Math.floor(m/60),mm=m%60;return h+":"+(mm<10?"0":"")+mm;}
+  function signBtns(k){
+    return U.SCOUTS.map(function(sc){var d=H.sign[sc.id][k];
+      return "<button data-k='"+k+"' data-s='"+sc.id+"' class='"+(d?"on":"")+"'>"+(d?"✓ ":"")+sc.name+(d?"<span class='d'>"+U.esc(d)+"</span>":"")+"</button>";}).join("");
+  }
+  document.getElementById("agenda").innerHTML=s.agenda.map(function(a){
+    var start=t;t+=a.min;
+    var reqs=(a.r||[]).map(function(k){var x=U.BY[k];if(!x)return "";
+      var stem=x.it[1]&&x.g.h?"<i>"+U.esc(x.g.h)+"</i> ":"";
+      return "<div class='req'><div class='code'>"+U.esc(x.b.name)+" · "+U.esc(x.it[0])+"</div><div class='rt'>"+(x.it[1]?stem+U.esc(x.it[1]):U.esc(x.g.h))+"</div><div class='sg noprint'>"+signBtns(k)+"</div></div>";}).join("");
+    return "<li><div class='clock'>"+fmt(start)+"<small>"+a.min+" min</small></div><div><p>"+U.esc(a.t)+"</p>"+reqs+"</div></li>";
+  }).join("");
+  document.getElementById("total").textContent=fmt(t)+" planned";
+
+  document.getElementById("agenda").addEventListener("click",function(e){
+    var b=e.target.closest("button[data-k]");if(!b)return;
+    var k=b.getAttribute("data-k"),sc=b.getAttribute("data-s");
+    if(H.sign[sc][k]){if(!confirm("Remove this sign-off?"))return;delete H.sign[sc][k];U.toast("Sign-off removed");}
+    else{H.sign[sc][k]=new Date().toLocaleDateString();U.toast("Signed off for "+(sc==="michael"?"Michael":"Peter"));}
+    U.save();
+    b.closest(".sg").innerHTML=signBtns(k);
+  });
+
+  var notes=document.getElementById("notes");notes.value=H.notes["mtg-"+s.id]||"";
+  notes.addEventListener("input",function(){H.notes["mtg-"+s.id]=notes.value;U.save();});
+
+  var pv=SESSIONS[idx-1],nx=SESSIONS[idx+1];
+  document.getElementById("pn").innerHTML=(pv?"<a class='btn ghost' href='meeting.html?s="+pv.id+"'>← "+U.esc(pv.title)+"</a>":"<span></span>")+
+    (nx?"<a class='btn' href='meeting.html?s="+nx.id+"'>"+U.esc(nx.title)+" →</a>":"<a class='btn' href='progress.html'>Go to Progress →</a>");
+  U.wireChecklists(document);
+})();
+</script>
+</body>
+</html>

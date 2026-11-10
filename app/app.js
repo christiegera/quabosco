@@ -2,6 +2,8 @@
 var NAMES={michael:"Michael",peter:"Peter"};
 var SCOUT=(new URLSearchParams(location.search).get("scout")||"").toLowerCase();
 var NAME=NAMES[SCOUT]||"";
+var EARNED={peter:["movie"]};
+if(EARNED[SCOUT])window.BADGES=BADGES.filter(function(b){return EARNED[SCOUT].indexOf(b.id)<0;});
 var KEY="quabosco-scout-v2"+(SCOUT?"-"+SCOUT:"");
 var S={st:{},nt:{},dt:{},hours:[],mom:false,pin:null,open:{}};
 try{var saved=JSON.parse(localStorage.getItem(KEY));if(saved)for(var k in saved)S[k]=saved[k];}catch(e){}

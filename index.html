@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camp Quabosco Badge Hub</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.hubgrid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;margin-top:22px}
+@media(max-width:820px){.hubgrid{grid-template-columns:1fr}}
+.door h3{font-family:var(--display);font-size:24px;color:var(--forest);margin:2px 0 6px;font-weight:600}
+.door p{margin:0 0 12px;color:var(--muted)}
+.mlist{list-style:none;margin:8px 0 0;padding:0;counter-reset:m}
+.mlist li a{display:grid;grid-template-columns:34px minmax(0,1fr) 60px;gap:10px;align-items:center;padding:9px 6px;border-top:1px dashed var(--line);text-decoration:none;color:var(--ink);border-radius:8px}
+.mlist li a:hover{background:#f1e8d2}
+.mnum{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;background:var(--khaki);color:var(--forest)}
+.mlist li.camp .mnum{background:var(--forest);color:#fff}
+.mt b{display:block;font-size:14.5px}
+.mt span{font-size:12px;color:var(--muted)}
+.mp{text-align:right}
+.mp .bar{height:6px}
+.mp small{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.scouts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media(max-width:560px){.scouts{grid-template-columns:1fr}}
+.sc{text-align:center}
+.sc h4{font-family:var(--display);font-size:22px;margin:6px 0 2px;color:var(--forest)}
+.sc .ring{margin:6px auto}
+.sc .row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.sc .meta{font-size:12px;color:var(--muted)}
+.mini-badges{display:flex;gap:4px;justify-content:center;margin-top:8px}
+.mini-badges span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:8.5px;font-weight:700;border:2px dashed var(--forest);color:var(--forest);background:#fff}
+.mini-badges span.full{background:var(--forest);color:#fff;border-style:solid}
+.links{display:flex;gap:8px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Merit badge project · Michael &amp; Peter</div>
+    <h1 class="title">The Camp Quabosco<br><em>badge hub.</em></h1>
+    <p class="lede">Five badges, eight work days, one camp: Moviemaking, Digital Technology, Communication, Graphic Arts, and Citizenship in the Community. Everything you need to run it is linked from here.</p>
+  </div>
+
+  <div class="hubgrid">
+    <div class="patch door">
+      <div class="eyebrow">For you</div>
+      <h3>Counselor's Guide</h3>
+      <p>The overall plan, the rules that keep sign-offs solid, and a planning page for every meeting.</p>
+      <div class="links"><a class="btn" href="counselor.html">Overall plan →</a></div>
+      <ul class="mlist" id="mlist"></ul>
+    </div>
+
+    <div class="grid">
+      <div class="patch door">
+        <div class="eyebrow">For the boys</div>
+        <h3>Scout's Guide</h3>
+        <p>What each work day looks like, what to bring, and what's due next time, all as checklists.</p>
+        <div class="links"><a class="btn" href="scout.html?scout=michael">Michael's guide</a><a class="btn" href="scout.html?scout=peter">Peter's guide</a></div>
+      </div>
+      <div class="patch door">
+        <div class="eyebrow">Their phones</div>
+        <h3>Scout's App</h3>
+        <p>Each boy gets his own link. The ring shows what you've signed off.</p>
+        <div class="scouts" id="scouts"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="data1.js"></script>
+<script src="data2.js"></script>
+<script src="sessions.js"></script>
+<script src="common.js"></script>
+<script>
+(function(){
+  var U=HUB;U.nav("hub");
+  document.getElementById("mlist").innerHTML=SESSIONS.map(function(s){
+    var p=U.listPct("prep-"+s.id,s.prep.length);
+    return "<li class='"+(s.kind==="Camp"?"camp":"")+"'><a href='meeting.html?s="+s.id+"'><span class='mnum'>"+s.n+"</span><span class='mt'><b>"+U.esc(s.title)+"</b><span>"+U.esc(s.kind)+" · "+U.esc(s.len)+"</span></span><span class='mp'><div class='bar'><i style='width:"+p+"%'></i></div><small>prep "+p+"%</small></span></a></li>";
+  }).join("");
+  document.getElementById("scouts").innerHTML=U.SCOUTS.map(function(sc){
+    var need=0,got=0,mb="";
+    BADGES.forEach(function(b){var u=U.units(b,U.signed(sc.id));need+=u.need;got+=u.got;
+      mb+="<span class='"+(u.pct===100?"full":"")+"' title='"+U.esc(b.name)+": "+u.pct+"%'>"+U.shortName(b.id)+"</span>";});
+    var pct=need?Math.round(got/need*100):0;
+    var imp=U.H.imports[sc.id];
+    return "<div class='sc'><h4>"+sc.name+"</h4>"+U.ring(pct,96,9)+"<div class='meta'>"+got+" of "+need+" signed off</div><div class='mini-badges'>"+mb+"</div>"+
+      "<div class='meta' style='margin-top:6px'>"+(imp?"Last update from his app: "+new Date(imp.at).toLocaleDateString():"No update from his app yet")+"</div>"+
+      "<div class='row'><a class='btn small' href='progress.html?scout="+sc.id+"'>Progress</a><a class='btn small ghost' href='app/index.html?scout="+sc.id+"'>Open app</a></div></div>";
+  }).join("");
+})();
+</script>
+</body>
+</html>

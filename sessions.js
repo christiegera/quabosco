@@ -3,10 +3,10 @@
 window.SESSIONS = [
 {id:"w1",n:1,kind:"Home",title:"Kickoff & planning",len:"About 4 hours",
  goal:"Both boys understand the whole project and leave with a calendar they built themselves.",
- prep:["Confirm the second registered adult for today","Confirm each boy has blue cards or Scoutbook entries for all five badges","Check Scoutbook: does Peter already have Moviemaking?","Print the official requirements for each boy","Paper wall calendar and markers","Two folders labeled with each boy's name","Queue up the Digital Safety video"],
+ prep:["Confirm the second registered adult for today","Confirm each boy has blue cards or Scoutbook entries for all five badges","Remind Peter he is crew on Michael's film (he already has Moviemaking)","Print the official requirements for each boy","Paper wall calendar and markers","Two folders labeled with each boy's name","Queue up the Digital Safety video"],
  bring:["Laptop or TV for the video","Calendar","Folders","Printed requirements"],
  agenda:[
-  {t:"Read through the requirements together. Each boy picks his film topic, printed piece, and interview subject.",min:30},
+  {t:"Read through the requirements together. Michael picks his film topic. Each boy picks his printed piece and interview subject.",min:30},
   {t:"Michael writes the project calendar (sessions, camp days, troop meetings, deadlines). Peter does his own.",min:30},
   {t:"Watch the Digital Safety video together.",min:20,r:["dt__1"]},
   {t:"Discussion: tech then and now; what devices might exist when you're an adult. Each boy answers himself.",min:25,r:["dt__2a","dt__2b"]},
@@ -18,13 +18,13 @@ window.SESSIONS = [
  scout:{do:["Pick my film idea, printed piece, and interview person","Fill in my project calendar","Watch the Digital Safety video","Talk about tech then and now","Talk about ways to communicate","Talk about good citizenship","Set up my blog and evidence folder"],
   before:["Write my film treatment (3–4 paragraphs)","Find court-of-honor or campfire ideas on 3 websites","Make my town map with distances","Ask an older adult about tech when they were my age","Blog entry #1"],bring:[]}},
 {id:"w2",n:2,kind:"Home",title:"Story & camera basics",len:"About 4 hours",
- goal:"A finished treatment, storyboard, and shot list for each film.",
+ goal:"A finished treatment, storyboard, and shot list for Michael's film. Peter works on his other badges.",
  prep:["Pick a 3–5 minute film clip to pause and discuss","Phones charged; one tripod","Storyboard sheets (boxes on paper are fine)","Check homework: treatments, websites, maps"],
  bring:["Phones","Tripod","Storyboard sheets","Pencils"],
  agenda:[
-  {t:"Watch the clip and pause it to discuss visual storytelling, rhythm, the 180° rule, camera movement, framing, and lens choice. Each boy demonstrates them on a phone.",min:50,r:["movie__1"]},
-  {t:"Review and finish treatments. Each boy draws his storyboard and shot list.",min:60,r:["movie__2a","movie__2b"]},
-  {t:"Each explains the zoom lens and its three important parts.",min:15,r:["movie__3b"]},
+  {t:"Watch the clip and pause it to discuss visual storytelling, rhythm, the 180° rule, camera movement, framing, and lens choice. Michael demonstrates each one on a phone.",min:50,r:["movie__1"]},
+  {t:"Review and finish treatments. Michael draws his storyboard and shot list.",min:60,r:["movie__2a","movie__2b"]},
+  {t:"Michael explains the zoom lens and its three important parts.",min:15,r:["movie__3b"]},
   {t:"Using their own test shots: how pictures and sound become data; lossy vs. lossless compression.",min:25,r:["dt__3a","dt__3b"]},
   {t:"Each picks three charities outside Scouting (the Legion is one) and starts researching the Legion.",min:30,r:["citc__7a"]},
   {t:"Wrap-up: next task, what's needed, by when.",min:10}],
@@ -32,11 +32,11 @@ window.SESSIONS = [
  scout:{do:["Show the filmmaking basics on a phone","Finish my treatment","Draw my storyboard and shot list","Explain the zoom lens","Explain how photos and sound turn into data","Pick 3 charities, including the Legion"],
   before:["Write my interview questions","Contact my interview person (copy a parent)","Research the Legion more","Blog entry #2"],bring:[]}},
 {id:"c1",n:3,kind:"Camp",title:"Camp Day A: shoot & serve",len:"Most of a day",
- goal:"All footage for both films, both interviews, and the first volunteer hours.",
+ goal:"All of Michael's footage (Peter on crew), both interviews, and the first volunteer hours.",
  prep:["Second registered adult confirmed for camp","Legion OK to film, in writing","Photo releases for anyone on camera","Legion contact who will initial volunteer logs","Printed shot lists and volunteer logs for each boy","Ask the Legion what service work they need"],
  bring:["Charged phones/cameras and batteries","Tripod","Shot lists","Interview questions","Volunteer logs and a pen","Work gloves, water, snacks"],
  agenda:[
-  {t:"Each boy shoots all six techniques himself: tripod, pan, framing, angle, lighting, handheld.",min:90,r:["movie__2c"]},
+  {t:"Michael shoots all six techniques himself: tripod, pan, framing, angle, lighting, handheld. Peter runs sound and crew.",min:90,r:["movie__2c"]},
   {t:"Interviews, each with his own subject. Record them. Ask about the camp's history and the name.",min:60,r:["comm__4","citc__7b"]},
   {t:"Service work the Legion asks for. Log each boy's hours separately, with initials.",min:120,r:["citc__7c"]},
   {t:"Stills for the printed pieces and web pages.",min:30}],
@@ -45,7 +45,7 @@ window.SESSIONS = [
   before:["Start editing my film","Blog entry #3 with photos"],
   bring:["Charged phone or camera","Tripod","Interview questions","Shot list","Volunteer log","Work gloves"]}},
 {id:"w3",n:4,kind:"Home",title:"Edit",len:"About 4 hours",
- goal:"A rough cut of each film, with a voiceover.",
+ goal:"A rough cut of Michael's film, and a voiceover from each boy.",
  prep:["Editing app installed on each device","A second device for the voiceover transfer","Royalty-free music source picked"],
  bring:["Laptops or tablets","Headphones","Footage backed up"],
  agenda:[
@@ -122,3 +122,18 @@ window.OUTSIDE = [
  {t:"Community presentation to a group",r:["citc__8"]},
  {t:"Careers or hobby research",r:["movie__4a","dt__9a","comm__9","ga__7"]}
 ];
+
+// Peter already has Moviemaking: he crews on Michael's film instead. "" removes an item.
+window.SWAP = {peter:{
+ "Pick my film idea, printed piece, and interview person":"Pick my printed piece and interview person (I'm crew on Michael's film)",
+ "Write my film treatment (3–4 paragraphs)":"",
+ "Show the filmmaking basics on a phone":"Help Michael practice the filmmaking basics",
+ "Finish my treatment":"",
+ "Draw my storyboard and shot list":"",
+ "Explain the zoom lens":"",
+ "Shoot all six: tripod, pan, framing, angle, lighting, handheld":"Run sound and hold the reflector for Michael's shoot",
+ "Start editing my film":"Pick a short camp clip (Michael's footage or my own) to narrate",
+ "Edit my film":"Help Michael with his edit",
+ "Record my voiceover and play it on another device":"Record a voiceover for my camp clip, move it to another device, and play it back",
+ "Finish my film":""
+}};

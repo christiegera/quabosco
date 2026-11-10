@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scout's Guide</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.who{display:flex;gap:8px;margin-top:16px}
+.who a{text-decoration:none}
+.big{display:flex;gap:18px;align-items:center;margin-top:16px}
+.big .bar{flex:1;height:14px}
+.sess{margin-bottom:16px}
+.sess-h{display:flex;align-items:center;gap:14px;cursor:pointer}
+.sess-h .n{flex:0 0 46px;height:46px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:22px;font-weight:700;background:var(--khaki);color:var(--forest)}
+.sess.camp .sess-h .n{background:var(--forest);color:#fff}
+.sess.full .sess-h .n{background:var(--orange);color:#fff}
+.sess-h h3{margin:0;font-family:var(--display);font-size:21px;color:var(--forest);font-weight:600}
+.sess-h p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.sess-h .pc{margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--orange);white-space:nowrap}
+.sess-b{display:none;margin-top:14px}
+.sess.open .sess-b{display:grid}
+.col h4{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin:0 0 4px;display:flex;justify-content:space-between}
+.done-means{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media(max-width:820px){.done-means{grid-template-columns:1fr 1fr}}
+.dm{text-align:center;padding:16px 12px}
+.dm .e{font-size:28px}
+.dm b{display:block;font-family:var(--display);font-size:17px;color:var(--forest);margin:4px 0}
+.dm span{font-size:13px;color:var(--muted)}
+.cele{display:none;text-align:center;font-family:var(--display);font-size:20px;color:var(--orange);margin-top:10px}
+.cele.on{display:block;animation:pop .5s ease}
+</style>
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<div class="wrap">
+  <div class="hero" id="hero"></div>
+  <div id="body"></div>
+</div>
+<script src="data1.js"></script>
+<script src="data2.js"></script>
+<script src="sessions.js"></script>
+<script src="common.js"></script>
+<script>
+(function(){
+  var U=HUB,H=U.H;U.nav("scout");
+  var sid=(new URLSearchParams(location.search).get("scout")||"").toLowerCase();
+  var sc=U.SCOUTS.filter(function(x){return x.id===sid;})[0];
+  var hero=document.getElementById("hero"),body=document.getElementById("body");
+  if(!sc){
+    hero.innerHTML="<div class='eyebrow'>Scout's Guide</div><h1 class='title'>Whose guide<br><em>is this?</em></h1><div class='who'>"+
+      U.SCOUTS.map(function(x){return "<a class='btn' href='scout.html?scout="+x.id+"'>"+x.name+"</a>";}).join("")+"</div>";
+    return;
+  }
+  document.title=sc.name+"'s Scout Guide";
+  var cols=[["do","At the meeting"],["before","Before next time"],["bring","Bring"]];
+  function lid(s,c){return "sg-"+sc.id+"-"+s.id+"-"+c;}
+  function sessCount(s){var n=0,d=0;cols.forEach(function(c){var a=s.scout[c[0]]||[];n+=a.length;d+=Object.keys(H.chk[lid(s,c[0])]||{}).length;});return [d,n];}
+  function total(){var n=0,d=0;SESSIONS.forEach(function(s){var c=sessCount(s);d+=c[0];n+=c[1];});return [d,n];}
+
+  hero.innerHTML="<div class='eyebrow'>Scout's Guide · "+sc.name+"</div><h1 class='title'>"+sc.name+"'s field book<br><em>for Camp Quabosco.</em></h1>"+
+    "<p class='lede'>Eight work days. Check things off as you go. Your badge sign-offs live in your app; this page is your to-do list for each day.</p>"+
+    "<div class='big'><div class='bar'><i id='bigbar'></i></div><span class='count' id='bigtxt'></span></div>"+
+    "<div class='who noprint'><a class='btn small' href='app/index.html?scout="+sc.id+"'>📱 Open my badge app</a></div>";
+
+  var firstOpen=SESSIONS.findIndex(function(s){var c=sessCount(s);return c[0]<c[1];});
+  var h="<h2 class='sec'>What “done” means <small>Read this once</small></h2><div class='done-means'>"+
+    "<div class='patch dm'><div class='e'>🙋</div><b>You did it yourself</b><span>Watching your friend do it doesn't count for you.</span></div>"+
+    "<div class='patch dm'><div class='e'>🗣️</div><b>You said it out loud</b><span>“Discuss” means you talk, not just nod.</span></div>"+
+    "<div class='patch dm'><div class='e'>📁</div><b>It's in your folder</b><span>Files, photos, notes. If you can't show it, it isn't done.</span></div>"+
+    "<div class='patch dm'><div class='e'>✍️</div><b>Mrs. Gera signed it</b><span>Mark it “Ready for review” in your app, then she checks it.</span></div></div>";
+  h+="<h2 class='sec'>Your eight work days</h2>";
+  SESSIONS.forEach(function(s,i){
+    var c=sessCount(s),camp=s.kind==="Camp";
+    h+="<div class='patch sess"+(camp?" camp":"")+(c[0]===c[1]&&c[1]?" full":"")+(i===firstOpen?" open":"")+"' data-s='"+s.id+"'>"+
+      "<div class='sess-h'><span class='n'>"+s.n+"</span><div><h3>"+U.esc(s.title)+"</h3><p><span class='tag "+(camp?"camp":"home")+"'>"+(camp?"At camp":"At home")+"</span> "+U.esc(s.len)+"</p></div><span class='pc'>"+c[0]+"/"+c[1]+"</span></div>"+
+      "<div class='sess-b grid g3'>";
+    cols.forEach(function(cc){var a=s.scout[cc[0]]||[];
+      h+="<div class='col'><h4>"+cc[1]+" <span data-count-for='"+lid(s,cc[0])+"'></span></h4>"+
+        (a.length?"<ul class='check' data-list='"+lid(s,cc[0])+"'>"+a.map(function(t){return "<li>"+U.esc(t)+"</li>";}).join("")+"</ul>":"<p class='small muted'>Nothing extra.</p>")+"</div>";});
+    h+="</div><div class='cele'>Day "+s.n+" complete! 🎉</div></div>";
+  });
+  h+="<h2 class='sec'>Outside the work days <small>Troop & town</small> <span class='count' style='margin-left:auto' data-count-for='sg-"+sc.id+"-outside'></span></h2><div class='patch'><ul class='check' data-list='sg-"+sc.id+"-outside'>"+
+    OUTSIDE.map(function(o){return "<li>"+U.esc(o.t)+"</li>";}).join("")+"</ul></div>";
+  body.innerHTML=h;
+
+  function refresh(){
+    var t=total(),p=t[1]?Math.round(t[0]/t[1]*100):0;
+    document.getElementById("bigbar").style.width=p+"%";
+    document.getElementById("bigtxt").textContent=t[0]+" of "+t[1]+" checked";
+    document.querySelectorAll(".sess").forEach(function(el){
+      var s=SESSIONS.filter(function(x){return x.id===el.getAttribute("data-s");})[0],c=sessCount(s);
+      var was=el.classList.contains("full"),now=c[0]===c[1]&&c[1]>0;
+      el.querySelector(".pc").textContent=c[0]+"/"+c[1];el.classList.toggle("full",now);
+      var ce=el.querySelector(".cele");ce.classList.toggle("on",now);
+      if(now&&!was)U.toast("Day "+s.n+" done. Nice work, "+sc.name+"!");
+    });
+  }
+  document.querySelectorAll(".sess-h").forEach(function(hd){hd.addEventListener("click",function(){hd.parentNode.classList.toggle("open");});});
+  U.wireChecklists(document,refresh);refresh();
+})();
+</script>
+</body>
+</html>

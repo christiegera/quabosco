@@ -86,7 +86,7 @@
   var t=0;
   function fmt(m){var h=Math.floor(m/60),mm=m%60;return h+":"+(mm<10?"0":"")+mm;}
   function signBtns(k){
-    return U.SCOUTS.map(function(sc){var d=H.sign[sc.id][k];
+    return U.SCOUTS.filter(function(sc){return U.hasBadge(sc.id,k);}).map(function(sc){var d=H.sign[sc.id][k];
       return "<button data-k='"+k+"' data-s='"+sc.id+"' class='"+(d?"on":"")+"'>"+(d?"✓ ":"")+sc.name+(d?"<span class='d'>"+U.esc(d)+"</span>":"")+"</button>";}).join("");
   }
   document.getElementById("agenda").innerHTML=s.agenda.map(function(a){

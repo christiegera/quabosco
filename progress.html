@@ -94,7 +94,7 @@ table.hrs td{padding:6px 5px;border-bottom:1px dashed var(--line)}
   function render(){
     document.getElementById("scoutTabs").innerHTML=U.SCOUTS.map(function(s){return "<button data-s='"+s.id+"' class='"+(s.id===cur?"on":"")+"'>"+s.name+"</button>";}).join("");
     var need=0,got=0,rings="",tabs="";
-    BADGES.forEach(function(b){var u=U.units(b,U.signed(cur));need+=u.need;got+=u.got;
+    U.badgesFor(cur).forEach(function(b){var u=U.units(b,U.signed(cur));need+=u.need;got+=u.got;
       var ready=0;b.reqs.forEach(function(g){g.items.forEach(function(it){var k=b.id+"__"+it[0];if(boySt(k)==="ready"&&!H.sign[cur][k])ready++;});});
       rings+="<div class='bring' data-b='"+b.id+"'>"+U.ring(u.pct,78,7)+"<small>"+U.shortName(b.id)+"</small></div>";
       tabs+="<button data-b='"+b.id+"' class='"+(b.id===curB?"on":"")+"'>"+U.esc(b.name)+" <span class='p'>"+u.pct+"%"+(ready?" · "+ready+" ready":"")+"</span></button>";});
@@ -105,7 +105,7 @@ table.hrs td{padding:6px 5px;border-bottom:1px dashed var(--line)}
     var im=H.imports[cur];
     document.getElementById("impInfo").textContent=got+" of "+need+" requirement units signed off. "+(im?"Last code from his app: "+new Date(im.at).toLocaleString()+".":"No code from his app yet.");
 
-    var b=BADGES.filter(function(x){return x.id===curB;})[0];
+    var mine=U.badgesFor(cur);var b=mine.filter(function(x){return x.id===curB;})[0];if(!b){b=mine[0];curB=b.id;}
     var only=document.getElementById("onlyReady").checked;
     var h="<div class='eyebrow' style='margin-bottom:8px'>"+U.esc(b.name)+(b.eagle?" · Eagle-required":"")+" · <a href='"+b.link+"' target='_blank' rel='noopener'>official requirements ↗</a></div>";
     b.reqs.forEach(function(g){
@@ -132,7 +132,7 @@ table.hrs td{padding:6px 5px;border-bottom:1px dashed var(--line)}
         "</tbody></table><p style='margin:10px 0 0;font-weight:700;color:var(--forest)'>Total: "+(Math.round(tot*100)/100)+" of 8 hours"+(tot>=8?" ✓":"")+"</p>";}
 
     var card="";
-    BADGES.forEach(function(bb){var list=[];bb.reqs.forEach(function(g){g.items.forEach(function(it){var d=H.sign[cur][bb.id+"__"+it[0]];if(d)list.push(it[0]+" ("+d+")");});});
+    U.badgesFor(cur).forEach(function(bb){var list=[];bb.reqs.forEach(function(g){g.items.forEach(function(it){var d=H.sign[cur][bb.id+"__"+it[0]];if(d)list.push(it[0]+" ("+d+")");});});
       card+="<p style='margin:0 0 8px'><b>"+U.esc(bb.name)+":</b> "+(list.length?U.esc(list.join(", ")):"<span class='muted'>none yet</span>")+"</p>";});
     document.getElementById("card").innerHTML=card;
   }

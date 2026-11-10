@@ -10,6 +10,10 @@ H.imports=H.imports||{};                // scout -> last progress code they sent
 function save(){try{localStorage.setItem(KEY,JSON.stringify(H));}catch(e){}}
 
 var SCOUTS=[{id:"michael",name:"Michael"},{id:"peter",name:"Peter"}];
+// Badges a Scout already earned, so they are left out of his app, guide, and progress.
+var EARNED={peter:["movie"]};
+function badgesFor(s){return (window.BADGES||[]).filter(function(b){return (EARNED[s]||[]).indexOf(b.id)<0;});}
+function hasBadge(s,key){return (EARNED[s]||[]).indexOf(String(key).split("__")[0])<0;}
 var BY={};
 (window.BADGES||[]).forEach(function(b){b.reqs.forEach(function(g){g.items.forEach(function(it){
   BY[b.id+"__"+it[0]]={b:b,g:g,it:it,code:shortName(b.id)+" "+it[0],text:it[1]||g.h};});});});
@@ -80,5 +84,5 @@ function nav(active){
 }
 
 window.HUB={H:H,save:save,SCOUTS:SCOUTS,BY:BY,esc:esc,units:units,signed:signed,readCode:readCode,ring:ring,
-  wireChecklists:wireChecklists,listPct:listPct,toast:toast,nav:nav,shortName:shortName};
+  badgesFor:badgesFor,hasBadge:hasBadge,wireChecklists:wireChecklists,listPct:listPct,toast:toast,nav:nav,shortName:shortName};
 })();

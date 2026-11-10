@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#244a35">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Badges">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>
+// Each Scout's home-screen icon should reopen his own link.
+(function(){var s=(new URLSearchParams(location.search).get("scout")||"").toLowerCase();
+var l=document.createElement("link");l.rel="manifest";l.href=(s==="michael"||s==="peter")?"manifest-"+s+".json":"manifest.json";document.head.appendChild(l);})();
+</script>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Quabosco Badge Tracker</title>
+<style>
+:root{
+  --paper:#f4efe3; --card:#fbf8f0; --ink:#1f2a22; --muted:#626a60; --line:#ddd4bf;
+  --forest:#244a35; --moss:#5f7d4a; --orange:#d9622b; --gold:#c99a5b; --sky:#2f6f8f;
+  --display:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --body:-apple-system,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  --mono:"SF Mono",Menlo,Consolas,monospace;
+  --safeB:env(safe-area-inset-bottom,0px); --safeT:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+body{padding-bottom:calc(150px + var(--safeB))}
+.top{position:sticky;top:0;z-index:5;background:var(--forest);color:var(--paper);padding:calc(14px + var(--safeT)) 18px 14px}
+.top .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#f2b38f}
+.top h1{font-family:var(--display);font-size:24px;margin:2px 0 0;font-weight:600}
+.view{display:none;padding:16px}
+.view.on{display:block}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;gap:16px;align-items:center}
+.hero svg{flex:0 0 96px;width:96px;height:96px}
+.hero b{font-family:var(--display);font-size:26px;color:var(--forest);display:block;line-height:1.1}
+.hero span{font-size:13px;color:var(--muted)}
+h2{font-family:var(--display);font-size:20px;color:var(--forest);margin:24px 2px 10px;font-weight:600}
+.counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.counts div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.counts b{display:block;font-family:var(--display);font-size:22px}
+.counts span{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.brow{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}
+.brow .nm{flex:1;min-width:0}
+.brow .nm b{font-family:var(--display);font-size:18px;color:var(--forest);display:block}
+.brow .nm small{font-size:12px;color:var(--muted)}
+.eagle{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:#a5371a;border:1px solid #a5371a66;border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:2px}
+.mini{width:44px;height:44px;flex:0 0 44px}
+.chev{color:var(--muted);font-size:20px;transition:transform .2s}
+.card.open .chev{transform:rotate(90deg)}
+.reqs{display:none;border-top:1px dashed var(--line)}
+.card.open .reqs{display:block}
+.blurb{font-size:13.5px;color:var(--muted);padding:12px 16px 4px;margin:0}
+.req{padding:12px 16px;border-top:1px solid var(--line)}
+.req:first-of-type{border-top:0}
+.rtop{display:flex;gap:10px;align-items:flex-start}
+.rid{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--forest);min-width:40px;padding-top:2px}
+.rtx{flex:1;font-size:14.5px}
+.rtx .tag{margin-top:6px}
+.tag{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;text-transform:uppercase}
+.tag.P{background:var(--forest);color:#fff}.tag.T{background:#e7d9b6;color:#5a4615}.tag.O{border:1px dashed var(--orange);color:var(--orange)}
+.tip{font-size:13px;color:var(--muted);margin:6px 0 0 50px}
+.grp{border-top:1px solid var(--line)}
+.ghead{display:flex;gap:8px;padding:14px 16px 8px;background:#f4eedd;font-size:14.5px;font-weight:600;line-height:1.4}
+.gnum{font-family:var(--mono);color:var(--forest);min-width:22px}
+.gpick{display:inline-block;margin-top:6px;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--orange);border:1px solid var(--orange);border-radius:10px;padding:2px 8px}
+.grp .req{border-top:1px dashed var(--line)}
+.rmeta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.tipx{font-size:13px;color:var(--muted)}
+.req .ctl,.req .note{margin-left:0}
+.src{display:block;padding:12px 16px 16px;font-size:13px;color:var(--sky);border-top:1px solid var(--line)}
+.ctl{display:flex;gap:8px;margin:10px 0 0 50px;flex-wrap:wrap}
+.st{border:1.5px solid var(--forest);background:transparent;color:var(--forest);border-radius:20px;padding:8px 14px;font-size:13.5px;font-weight:600;font-family:var(--body);min-height:40px}
+.st.doing{background:#f6e3c8;border-color:var(--gold);color:#6b4a14}
+.st.ready{background:var(--orange);border-color:var(--orange);color:#fff}
+.st.signed{background:var(--forest);color:#fff}
+.nbtn{border:1px solid var(--line);background:#fff;border-radius:20px;padding:8px 12px;font-size:13px;color:var(--muted);min-height:40px;font-family:var(--body)}
+.nbtn.has{color:var(--sky);border-color:#2f6f8f66}
+textarea,input{font-family:var(--body);font-size:16px;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;color:var(--ink);width:100%}
+.note{display:none;margin:10px 0 0 50px}
+.note.on{display:block}
+.note small{display:block;font-size:11.5px;color:var(--muted);margin-top:4px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.btabs{position:sticky;top:calc(76px + var(--safeT));z-index:4;display:flex;gap:8px;overflow-x:auto;margin:-16px -16px 12px;padding:12px 16px;background:var(--paper);border-bottom:1px solid var(--line);scrollbar-width:none}
+.btabs::-webkit-scrollbar{display:none}
+.btab{flex:0 0 auto;display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:var(--card);color:var(--forest);border-radius:14px;padding:6px 14px 6px 6px;font-family:var(--body);font-size:14px;font-weight:700}
+.btab .mini{width:34px;height:34px;flex:0 0 34px}
+.btab.on{background:var(--forest);border-color:var(--forest);color:#fff}
+.btab.on .mini text{fill:#fff}
+.card.solo .brow{cursor:default}.card.solo .chev{display:none}
+.chips button{flex:0 0 auto;border:1.5px solid var(--forest);background:transparent;color:var(--forest);border-radius:20px;padding:7px 13px;font-size:13px;font-weight:600;font-family:var(--body)}
+.chips button.on{background:var(--forest);color:#fff}
+.next{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--orange);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.next b{font-family:var(--mono);font-size:11px;color:var(--orange);display:block}
+.next p{margin:2px 0 0;font-size:14px}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:18px}
+.log form{display:grid;grid-template-columns:minmax(0,1fr) 90px;gap:8px;margin-bottom:12px}
+.log form .full{grid-column:1/-1}
+.log button.add{grid-column:1/-1;background:var(--forest);color:#fff;border:0;border-radius:12px;padding:13px;font-size:16px;font-weight:600}
+.entry{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.entry .h{font-family:var(--display);font-size:22px;color:var(--forest);min-width:44px;text-align:center}
+.entry .d{flex:1;min-width:0;font-size:14px}
+.entry .d small{display:block;color:var(--muted);font-size:12px}
+.entry button{border:0;background:transparent;color:var(--muted);font-size:20px;padding:6px}
+.bar{height:12px;background:#e6ddc8;border-radius:8px;overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:var(--orange);transition:width .4s}
+.info p,.info li{font-size:14.5px}
+.info ul{padding-left:20px}
+.info li{margin:6px 0}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.box h3{font-family:var(--display);color:var(--forest);margin:0 0 6px;font-size:17px}
+.box p{margin:0 0 6px}
+.mom{width:100%;border:1.5px dashed var(--forest);background:transparent;color:var(--forest);border-radius:12px;padding:12px;font-size:15px;font-weight:600;margin-top:4px;font-family:var(--body)}
+.mom.on{background:var(--forest);color:#fff;border-style:solid}
+.small{font-size:12.5px;color:var(--muted)}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:10;background:rgba(251,248,240,.97);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 6px calc(64px + var(--safeB))}
+nav button{border:0;background:transparent;font-family:var(--body);font-size:11px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;font-weight:600}
+nav button svg{width:24px;height:24px}
+nav button.on{color:var(--forest)}
+.toast{position:fixed;left:50%;bottom:calc(140px + var(--safeB));transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:20px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:20}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="top"><div class="k" id="topK">Camp Quabosco project</div><h1 id="topH">My badges</h1></div>
+
+<section class="view on" id="v-home">
+  <div class="hero">
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#e3dac4" stroke-width="10"/><circle id="hArc" cx="50" cy="50" r="42" fill="none" stroke="#d9622b" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 264" transform="rotate(-90 50 50)"/><text id="hPct" x="50" y="56" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-weight="700" fill="#244a35">0%</text></svg>
+    <div><b id="hTitle">Let's get started</b><span id="hSub"></span></div>
+  </div>
+  <div class="counts">
+    <div><b id="cDoing">0</b><span>Working</span></div>
+    <div><b id="cReady">0</b><span>Ready for review</span></div>
+    <div><b id="cSigned">0</b><span>Signed off</span></div>
+  </div>
+  <button class="mom on" id="sendBtn" style="margin-top:14px">📤 Send my progress to Mrs. Gera</button>
+  <h2>Up next from the camp project</h2>
+  <div id="nextList"></div>
+  <h2>Badges closest to done</h2>
+  <div id="closeList"></div>
+</section>
+<section class="view" id="v-badges">
+  <div class="btabs" id="btabs"></div>
+  <div class="chips" id="chips">
+    <button data-f="all" class="on">All</button>
+    <button data-f="P">Camp project</button>
+    <button data-f="T">Tie-ins</button>
+    <button data-f="O">Outside work</button>
+    <button data-f="open">Not done</button>
+  </div>
+  <div id="badgeList"></div>
+</section>
+
+<section class="view log" id="v-hours">
+  <div class="box">
+    <h3>Volunteer hours for the American Legion</h3>
+    <p class="small">Citizenship in the Community 7c needs at least 8 hours. Log every session and have a Legion contact initial it.</p>
+    <div class="bar"><i id="hrBar" style="width:0"></i></div>
+    <div class="small" id="hrTotal">0 of 8 hours</div>
+  </div>
+  <form id="hrForm">
+    <input class="full" id="hrTask" placeholder="What did you do? (e.g., filmed trail, cleared brush)" required>
+    <input id="hrDate" type="date" required>
+    <input id="hrHrs" type="number" inputmode="decimal" step="0.25" min="0.25" placeholder="Hours" required>
+    <input class="full" id="hrWho" placeholder="Legion contact who initialed it">
+    <button class="add" type="submit">Add session</button>
+  </form>
+  <div id="hrList"></div>
+</section>
+
+<section class="view info" id="v-info">
+  <div class="box"><h3>How each badge works</h3><ul>
+    <li><b>Before you start a badge:</b> talk to your Scoutmaster and get the blue card signed (or recorded in Scoutbook).</li>
+    <li>Do each requirement <b>exactly as written</b>. Mrs. Gera can't change or skip any, even though she's your counselor.</li>
+    <li>When you finish one, tap it to <b>Ready for review</b> and add a note about what you did and where the proof is.</li>
+    <li>Mrs. Gera reviews it with you and marks it <b>Signed off</b>.</li></ul></div>
+  <div class="box"><h3>Before you post anything</h3><ul>
+    <li>Got the Legion's OK to film? The camp is private property.</li>
+    <li>Anyone recognizable in the shot agreed to be posted (and their parent, if they're a kid)?</li>
+    <li>Location tags turned off on the photo?</li>
+    <li>Music is licensed or royalty-free?</li>
+    <li>Website or blog going live? Mrs. Gera approves it first. Communication 7 and Digital Technology 6 require it.</li></ul></div>
+  <div class="box"><h3>Key tags</h3>
+    <p><span class="tag P">Camp project</span> The camp work itself counts.</p>
+    <p><span class="tag T">Tie-in</span> A separate step, but you can make it about the camp.</p>
+    <p><span class="tag O">Outside</span> Has to be done separately.</p></div>
+  <div class="box"><h3>Counselor mode</h3>
+    <p class="small">For Mrs. Gera. Turns on the "Signed off" step and lets you set a sign-off date. This is a convenience lock, not real security.</p>
+    <button class="mom" id="momBtn">Turn on counselor mode</button></div>
+  <div class="box"><h3>Backup</h3>
+    <p class="small">Progress is saved only on this phone. Copy a backup every so often and text or email it to yourself.</p>
+    <button class="mom" id="expBtn">Copy backup to clipboard</button>
+    <button class="mom" id="impBtn" style="margin-top:8px">Restore from backup</button></div>
+  <p class="small" style="text-align:center">Requirement wording is copied from scouting.org (2026). Check Scoutbook before each sign-off in case it changes.</p>
+</section>
+
+<nav id="nav">
+  <button data-v="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Today</button>
+  <button data-v="badges"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="6"/><path d="M8.5 14l-1.5 7 5-2.5 5 2.5-1.5-7"/></svg>Badges</button>
+  <button data-v="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Hours</button>
+  <button data-v="info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>Guide</button>
+</nav>
+<div class="toast" id="toast"></div>
+<script src="data1.js"></script>
+<script src="data2.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

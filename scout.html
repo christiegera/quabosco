@@ -55,11 +55,14 @@
   document.title=sc.name+"'s Scout Guide";
   var cols=[["do","At the meeting"],["before","Before next time"],["bring","Bring"]];
   function lid(s,c){return "sg-"+sc.id+"-"+s.id+"-"+c;}
-  function sessCount(s){var n=0,d=0;cols.forEach(function(c){var a=s.scout[c[0]]||[];n+=a.length;d+=Object.keys(H.chk[lid(s,c[0])]||{}).length;});return [d,n];}
+  var SW=(window.SWAP||{})[sc.id]||{};
+  function items(s,c){return (s.scout[c]||[]).map(function(t){return t in SW?SW[t]:t;}).filter(function(t){return t;});}
+  var MYOUT=OUTSIDE.filter(function(o){return o.r.some(function(k){return U.hasBadge(sc.id,k);});});
+  function sessCount(s){var n=0,d=0;cols.forEach(function(c){var a=items(s,c[0]);n+=a.length;d+=Object.keys(H.chk[lid(s,c[0])]||{}).length;});return [d,n];}
   function total(){var n=0,d=0;SESSIONS.forEach(function(s){var c=sessCount(s);d+=c[0];n+=c[1];});return [d,n];}
 
   hero.innerHTML="<div class='eyebrow'>Scout's Guide · "+sc.name+"</div><h1 class='title'>"+sc.name+"'s field book<br><em>for Camp Quabosco.</em></h1>"+
-    "<p class='lede'>Eight work days. Check things off as you go. Your badge sign-offs live in your app; this page is your to-do list for each day.</p>"+
+    "<p class='lede'>"+(sc.id==="peter"?"You already have Moviemaking, so you're the crew on Michael's film. ":"")+"Eight work days. Check things off as you go. Your badge sign-offs live in your app; this page is your to-do list for each day.</p>"+
     "<div class='big'><div class='bar'><i id='bigbar'></i></div><span class='count' id='bigtxt'></span></div>"+
     "<div class='who noprint'><a class='btn small' href='app/index.html?scout="+sc.id+"'>📱 Open my badge app</a></div>";
 
@@ -75,13 +78,13 @@
     h+="<div class='patch sess"+(camp?" camp":"")+(c[0]===c[1]&&c[1]?" full":"")+(i===firstOpen?" open":"")+"' data-s='"+s.id+"'>"+
       "<div class='sess-h'><span class='n'>"+s.n+"</span><div><h3>"+U.esc(s.title)+"</h3><p><span class='tag "+(camp?"camp":"home")+"'>"+(camp?"At camp":"At home")+"</span> "+U.esc(s.len)+"</p></div><span class='pc'>"+c[0]+"/"+c[1]+"</span></div>"+
       "<div class='sess-b grid g3'>";
-    cols.forEach(function(cc){var a=s.scout[cc[0]]||[];
+    cols.forEach(function(cc){var a=items(s,cc[0]);
       h+="<div class='col'><h4>"+cc[1]+" <span data-count-for='"+lid(s,cc[0])+"'></span></h4>"+
         (a.length?"<ul class='check' data-list='"+lid(s,cc[0])+"'>"+a.map(function(t){return "<li>"+U.esc(t)+"</li>";}).join("")+"</ul>":"<p class='small muted'>Nothing extra.</p>")+"</div>";});
     h+="</div><div class='cele'>Day "+s.n+" complete! 🎉</div></div>";
   });
   h+="<h2 class='sec'>Outside the work days <small>Troop & town</small> <span class='count' style='margin-left:auto' data-count-for='sg-"+sc.id+"-outside'></span></h2><div class='patch'><ul class='check' data-list='sg-"+sc.id+"-outside'>"+
-    OUTSIDE.map(function(o){return "<li>"+U.esc(o.t)+"</li>";}).join("")+"</ul></div>";
+    MYOUT.map(function(o){return "<li>"+U.esc(o.t)+"</li>";}).join("")+"</ul></div>";
   body.innerHTML=h;
 
   function refresh(){

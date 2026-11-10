@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Progress</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.tabs button{font-family:var(--body);font-weight:700;font-size:14px;border:2px solid var(--forest);background:transparent;color:var(--forest);border-radius:22px;padding:7px 16px;cursor:pointer}
+.tabs button.on{background:var(--forest);color:#fff}
+.tabs.badges button{border-color:var(--line);font-size:13px;padding:6px 12px;display:flex;align-items:center;gap:6px}
+.tabs.badges button.on{background:var(--card);color:var(--forest);border-color:var(--orange)}
+.tabs.badges .p{font-family:var(--mono);font-size:10.5px;color:var(--orange)}
+.top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:center;margin-top:16px}
+@media(max-width:640px){.top{grid-template-columns:1fr;justify-items:center}}
+.brings{display:flex;gap:12px;flex-wrap:wrap}
+.bring{text-align:center;cursor:pointer}
+.bring small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:2px}
+.grp{margin-bottom:12px}
+.grp-h{display:flex;gap:10px;align-items:baseline;margin-bottom:4px}
+.grp-h .num{font-family:var(--display);font-size:20px;font-weight:700;color:var(--orange);flex:0 0 auto}
+.grp-h .st{font-size:14.5px;font-weight:600}
+.pick{font-family:var(--mono);font-size:10.5px;font-weight:700;background:var(--orange);color:#fff;border-radius:4px;padding:1px 6px;margin-left:6px;white-space:nowrap}
+.rq{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 4px;border-top:1px dashed var(--line)}
+.rq .t{font-size:14px}
+.rq .t .id{font-family:var(--mono);font-weight:700;color:var(--forest);margin-right:4px}
+.rq .boy{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.st-chip{font-family:var(--mono);font-size:10.5px;font-weight:700;border-radius:10px;padding:2px 8px}
+.st-todo{background:#ece5d3;color:#7a7360}.st-doing{background:#dbe7ef;color:#2f6f8f}.st-ready{background:#fbe2d3;color:#a5371a}.st-signed{background:#dbe8d4;color:#23472f}
+.boynote{font-size:12px;color:var(--muted);font-style:italic}
+.sbtn{font-family:var(--body);font-weight:700;font-size:13px;border:2px solid var(--forest);background:#fff;color:var(--forest);border-radius:10px;padding:6px 12px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.sbtn .box{flex:0 0 18px;width:18px;height:18px;border-radius:5px;margin:0}
+.sbtn.on{background:var(--forest);color:#fff}
+.sbtn.on .box{background:#fff}.sbtn.on .box svg{stroke:var(--forest);stroke-dashoffset:0}
+.rq.ready{background:#fff4ec;border-radius:8px}
+.imp{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}
+@media(max-width:640px){.imp{grid-template-columns:1fr}}
+table.hrs{width:100%;border-collapse:collapse;font-size:13.5px}
+table.hrs th{text-align:left;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--forest);padding:5px}
+table.hrs td{padding:6px 5px;border-bottom:1px dashed var(--line)}
+.filter{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin:6px 0 10px}
+</style>
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Counselor · Progress & sign-offs</div>
+    <h1 class="title">Where each boy<br><em>actually stands.</em></h1>
+    <p class="lede">Your sign-offs are the official record. The boys' app status shows what they think is ready. Requirements they've marked "Ready for review" are highlighted.</p>
+    <div class="tabs noprint" id="scoutTabs"></div>
+  </div>
+
+  <div class="top">
+    <div id="bigRing"></div>
+    <div>
+      <div class="brings" id="badgeRings"></div>
+      <div class="small muted" id="impInfo" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <div class="patch noprint" style="margin-top:18px">
+    <div class="eyebrow">Paste his progress code</div>
+    <p class="small muted" style="margin:4px 0 10px">He taps "📤 Send my progress to Mrs. Gera" in his app and texts you a code starting with QBP1. Paste the whole text here.</p>
+    <div class="imp"><textarea id="code" rows="2" placeholder="QBP1.eyJ2Ijox…"></textarea><button class="btn" id="impBtn">Import</button></div>
+  </div>
+
+  <div class="tabs badges noprint" id="badgeTabs"></div>
+  <div class="filter noprint"><label><input type="checkbox" id="onlyReady"> Show only what he's marked ready for review</label></div>
+  <div class="patch" id="reqs"></div>
+
+  <h2 class="sec">Volunteer hours <small>From his app</small></h2>
+  <div class="patch" id="hours"></div>
+
+  <h2 class="sec">For the blue card <small>Signed requirements and dates</small></h2>
+  <div class="patch" id="card"></div>
+</div>
+<script src="data1.js"></script>
+<script src="data2.js"></script>
+<script src="sessions.js"></script>
+<script src="common.js"></script>
+<script>
+(function(){
+  var U=HUB,H=U.H;U.nav("progress");
+  var q=new URLSearchParams(location.search);
+  var cur=(q.get("scout")||"michael").toLowerCase();if(!H.sign[cur])cur="michael";
+  var curB=q.get("b")||BADGES[0].id;
+  var TICK="<span class='box'><svg viewBox='0 0 24 24'><path d='M5 12.5l4.5 4.5L19 7.5'/></svg></span>";
+  var LBL={todo:"To do",doing:"Working on it",ready:"Ready for review",signed:"He says signed"};
+  function name(){return cur==="michael"?"Michael":"Peter";}
+  function boySt(k){var im=H.imports[cur];return im&&im.st?im.st[k]||"todo":null;}
+
+  function render(){
+    document.getElementById("scoutTabs").innerHTML=U.SCOUTS.map(function(s){return "<button data-s='"+s.id+"' class='"+(s.id===cur?"on":"")+"'>"+s.name+"</button>";}).join("");
+    var need=0,got=0,rings="",tabs="";
+    BADGES.forEach(function(b){var u=U.units(b,U.signed(cur));need+=u.need;got+=u.got;
+      var ready=0;b.reqs.forEach(function(g){g.items.forEach(function(it){var k=b.id+"__"+it[0];if(boySt(k)==="ready"&&!H.sign[cur][k])ready++;});});
+      rings+="<div class='bring' data-b='"+b.id+"'>"+U.ring(u.pct,78,7)+"<small>"+U.shortName(b.id)+"</small></div>";
+      tabs+="<button data-b='"+b.id+"' class='"+(b.id===curB?"on":"")+"'>"+U.esc(b.name)+" <span class='p'>"+u.pct+"%"+(ready?" · "+ready+" ready":"")+"</span></button>";});
+    var pct=need?Math.round(got/need*100):0;
+    document.getElementById("bigRing").innerHTML=U.ring(pct,150,13)+"<div style='text-align:center;font-family:var(--display);font-size:20px;color:var(--forest);margin-top:4px'>"+name()+"</div>";
+    document.getElementById("badgeRings").innerHTML=rings;
+    document.getElementById("badgeTabs").innerHTML=tabs;
+    var im=H.imports[cur];
+    document.getElementById("impInfo").textContent=got+" of "+need+" requirement units signed off. "+(im?"Last code from his app: "+new Date(im.at).toLocaleString()+".":"No code from his app yet.");
+
+    var b=BADGES.filter(function(x){return x.id===curB;})[0];
+    var only=document.getElementById("onlyReady").checked;
+    var h="<div class='eyebrow' style='margin-bottom:8px'>"+U.esc(b.name)+(b.eagle?" · Eagle-required":"")+" · <a href='"+b.link+"' target='_blank' rel='noopener'>official requirements ↗</a></div>";
+    b.reqs.forEach(function(g){
+      var rows="";
+      g.items.forEach(function(it){
+        var k=b.id+"__"+it[0],sd=H.sign[cur][k],bs=boySt(k);
+        if(only&&!(bs==="ready"&&!sd))return;
+        var nt=im&&im.nt?im.nt[k]:"";
+        rows+="<div class='rq"+(bs==="ready"&&!sd?" ready":"")+"'><div><div class='t'>"+(it[1]?"<span class='id'>("+U.esc(it[0].replace(/^\d+/,""))+")</span>"+U.esc(it[1]):"<span class='id'>Requirement "+U.esc(g.n)+"</span>")+"</div>"+
+          (bs?"<div class='boy'><span class='st-chip st-"+bs+"'>"+LBL[bs]+"</span>"+(nt?"<span class='boynote'>“"+U.esc(nt)+"”</span>":"")+"</div>":"")+"</div>"+
+          "<button class='sbtn"+(sd?" on":"")+"' data-k='"+k+"'>"+TICK+(sd?"Signed "+U.esc(sd):"Sign off")+"</button></div>";
+      });
+      if(!rows)return;
+      h+="<div class='grp'><div class='grp-h'><span class='num'>"+U.esc(g.n)+"</span><span class='st'>"+U.esc(g.h)+(g.pick?"<span class='pick'>DO "+g.pick+"</span>":"")+"</span></div>"+rows+"</div>";
+    });
+    if(only&&h.indexOf("class='rq")<0)h+="<p class='muted'>Nothing marked ready for review in this badge.</p>";
+    document.getElementById("reqs").innerHTML=h;
+
+    var hr=im&&im.hours||[];
+    if(!hr.length)document.getElementById("hours").innerHTML="<p class='muted' style='margin:0'>No hours yet. They show up here after he sends a code.</p>";
+    else{var tot=hr.reduce(function(a,x){return a+(+x.hrs||0);},0);
+      document.getElementById("hours").innerHTML="<table class='hrs'><thead><tr><th>Date</th><th>Task</th><th>Hours</th><th>Supervisor</th></tr></thead><tbody>"+
+        hr.slice().sort(function(a,c){return a.date<c.date?-1:1;}).map(function(x){return "<tr><td>"+U.esc(x.date)+"</td><td>"+U.esc(x.task)+"</td><td>"+U.esc(x.hrs)+"</td><td>"+U.esc(x.who)+"</td></tr>";}).join("")+
+        "</tbody></table><p style='margin:10px 0 0;font-weight:700;color:var(--forest)'>Total: "+(Math.round(tot*100)/100)+" of 8 hours"+(tot>=8?" ✓":"")+"</p>";}
+
+    var card="";
+    BADGES.forEach(function(bb){var list=[];bb.reqs.forEach(function(g){g.items.forEach(function(it){var d=H.sign[cur][bb.id+"__"+it[0]];if(d)list.push(it[0]+" ("+d+")");});});
+      card+="<p style='margin:0 0 8px'><b>"+U.esc(bb.name)+":</b> "+(list.length?U.esc(list.join(", ")):"<span class='muted'>none yet</span>")+"</p>";});
+    document.getElementById("card").innerHTML=card;
+  }
+
+  document.addEventListener("click",function(e){
+    var t;
+    if(t=e.target.closest("#scoutTabs button")){cur=t.getAttribute("data-s");history.replaceState(null,"","?scout="+cur+"&b="+curB);render();return;}
+    if(t=e.target.closest("[data-b]")){curB=t.getAttribute("data-b");history.replaceState(null,"","?scout="+cur+"&b="+curB);render();document.getElementById("badgeTabs").scrollIntoView({behavior:"smooth",block:"start"});return;}
+    if(t=e.target.closest(".sbtn")){var k=t.getAttribute("data-k");
+      if(H.sign[cur][k]){if(!confirm("Remove this sign-off?"))return;delete H.sign[cur][k];}
+      else{H.sign[cur][k]=new Date().toLocaleDateString();U.toast("Signed off ✓");}
+      U.save();render();}
+  });
+  document.getElementById("onlyReady").addEventListener("change",render);
+  document.getElementById("impBtn").addEventListener("click",function(){
+    var el=document.getElementById("code");
+    try{var d=U.readCode(el.value);
+      var who=d.scout&&H.sign[d.scout]?d.scout:cur;
+      if(d.scout&&d.scout!==cur&&!confirm("This code is from "+(who==="michael"?"Michael":"Peter")+". Import it to his page?"))return;
+      H.imports[who]=d;U.save();cur=who;el.value="";render();U.toast("Imported "+(who==="michael"?"Michael":"Peter")+"'s progress");
+    }catch(err){alert("That doesn't look like a progress code. Make sure you pasted the whole thing, starting with QBP1.");}
+  });
+  render();
+})();
+</script>
+</body>
+</html>

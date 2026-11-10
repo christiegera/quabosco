@@ -80,7 +80,7 @@
   }).join("");
   document.getElementById("scouts").innerHTML=U.SCOUTS.map(function(sc){
     var need=0,got=0,mb="";
-    BADGES.forEach(function(b){var u=U.units(b,U.signed(sc.id));need+=u.need;got+=u.got;
+    U.badgesFor(sc.id).forEach(function(b){var u=U.units(b,U.signed(sc.id));need+=u.need;got+=u.got;
       mb+="<span class='"+(u.pct===100?"full":"")+"' title='"+U.esc(b.name)+": "+u.pct+"%'>"+U.shortName(b.id)+"</span>";});
     var pct=need?Math.round(got/need*100):0;
     var imp=U.H.imports[sc.id];

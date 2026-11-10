@@ -1,0 +1,13 @@
+{
+  "name": "Michael's Quabosco Badges",
+  "short_name": "Michael's Badges",
+  "start_url": "./index.html?scout=michael",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4efe3",
+  "theme_color": "#244a35",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
